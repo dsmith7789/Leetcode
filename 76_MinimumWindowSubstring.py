@@ -5,13 +5,8 @@ class Solution(object):
         :type t: str
         :rtype: str
         """
-        # 2 hashmaps
-        # 1 for the count of letters in t
-        # 1 for the substring of s[left : right] but the only keys are the letters from t
-        # increment the count of the letter at right if it's in the hashmap keys
-        # if we need to move left, decrement the count of the value we moved it off
-        # once we find a valid window, shrink by finding the next element in the window
-
+        # My own solution
+        """
         t_map = {}
         for letter in t:
             t_map[letter] = 1 + t_map.get(letter, 0)
@@ -45,3 +40,32 @@ class Solution(object):
                 left += 1       
 
         return min_substring
+        """
+
+        # Neetcode algorithm
+        t_map = {}
+        for letter in t:
+            t_map[letter] = 1 + t_map.get(letter, 0)
+        window = dict.fromkeys(t_map, 0)
+        left = 0
+        res = (0, 0)
+        have = 0
+        need = len(t_map)
+
+        for right in range(len(s)):
+            # expand window
+            if s[right] in window:
+                window[s[right]] += 1
+                if window[s[right]] == t_map[s[right]]:
+                    have += 1
+            while have >= need:
+                if res == (0, 0):
+                    res = (left, right + 1)
+                elif (right - left) < (res[1] - res[0]):
+                    res = (left, right + 1)
+                if s[left] in window:
+                    window[s[left]] -= 1
+                    if window[s[left]] < t_map[s[left]]:
+                        have -= 1
+                left += 1
+        return s[res[0] : res[1]]
